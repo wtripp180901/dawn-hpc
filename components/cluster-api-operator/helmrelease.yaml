@@ -30,4 +30,4 @@ spec:
           - /spec/conversion/webhook/clientConfig/caBundle
         target:
           kind: CustomResourceDefinition
-  interval: 10m
+  interval: 5m

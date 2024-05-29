@@ -28,5 +28,7 @@ spec:
       retries: -1
   driftDetection:
     mode: enabled
-  # Allow 30 minutes for the autoscaler pod to start
-  interval: 30m
+  # Reconcile every 5 minutes
+  interval: 5m
+  # Allow up to 30m for Helm actions
+  timeout: 30m
