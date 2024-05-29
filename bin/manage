@@ -167,6 +167,13 @@ async def get_cluster_graph(ek_client, namespace):
     # We respect secrets that are owner by the CAPI cluster or the Helm release
     eksecrets = await ek_client.api("v1").resource("secrets")
     async for secret in eksecrets.list(namespace = namespace):
+        # If the secret is owned by a sealed secret, drop the owner reference
+        if "ownerReferences" in secret.metadata:
+            secret.metadata["ownerReferences"] = [
+                ref
+                for ref in secret.metadata["ownerReferences"]
+                if ref["kind"] != "SealedSecret"
+            ]
         graph.add_object(eksecrets.api_version, eksecrets.kind, secret)
     # Then add all of the Cluster API resources from the namespace
     for api_group in CAPI_API_GROUPS:
@@ -649,7 +656,6 @@ async def teardown(cluster):
         await wait_for_capi_providers(ek_kind)
         # Move the cluster resources from the CAPI cluster to the kind cluster
         await move_capi_resources(ek_capi, ek_kind, "capi-self")
-        await wait_for_cluster(ek_kind, "capi-self")
         # Delete the cluster
         await delete_cluster(ek_kind, "capi-self")
 
