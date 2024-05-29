@@ -1,0 +1,5 @@
+resources:
+  - ../cert-manager
+  - ../cluster-api-operator
+  - ../cluster-api-addon-provider
+  - ../cluster-api-janitor-openstack

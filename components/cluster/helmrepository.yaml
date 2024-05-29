@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: capi-helm-charts
+  namespace: capi-self
+spec:
+  url: https://stackhpc.github.io/capi-helm-charts
+  interval: 1h

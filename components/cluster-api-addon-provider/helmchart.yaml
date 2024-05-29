@@ -1,0 +1,13 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: cluster-api-addon-provider
+  namespace: capi-addon-system
+spec:
+  chart: cluster-api-addon-provider
+  version: 0.5.6
+  sourceRef:
+    kind: HelmRepository
+    name: cluster-api-addon-provider
+  interval: 1h

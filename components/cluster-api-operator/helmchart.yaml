@@ -1,0 +1,13 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: cluster-api-operator
+  namespace: capi-operator-system
+spec:
+  chart: cluster-api-operator
+  version: 0.10.1
+  sourceRef:
+    kind: HelmRepository
+    name: cluster-api-operator
+  interval: 1h

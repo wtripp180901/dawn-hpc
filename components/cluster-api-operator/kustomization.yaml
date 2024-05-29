@@ -1,0 +1,6 @@
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - helmrepository.yaml
+  - helmchart.yaml
+  - helmrelease.yaml

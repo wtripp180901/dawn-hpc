@@ -1,0 +1,24 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cluster-api-addon-provider
+  namespace: capi-addon-system
+spec:
+  dependsOn:
+    - name: cluster-api-operator
+      namespace: capi-operator-system
+  chartRef:
+    kind: HelmChart
+    name: cluster-api-addon-provider
+  releaseName: cluster-api-addon-provider
+  install:
+    createNamespace: true
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  driftDetection:
+    mode: enabled
+  interval: 10m

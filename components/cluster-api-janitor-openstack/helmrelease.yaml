@@ -1,0 +1,24 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cluster-api-janitor-openstack
+  namespace: capi-janitor-system
+spec:
+  dependsOn:
+    - name: cluster-api-operator
+      namespace: capi-operator-system
+  chartRef:
+    kind: HelmChart
+    name: cluster-api-janitor-openstack
+  releaseName: cluster-api-janitor-openstack
+  install:
+    createNamespace: true
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  driftDetection:
+    mode: enabled
+  interval: 10m

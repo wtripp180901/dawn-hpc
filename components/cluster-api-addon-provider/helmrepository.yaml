@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: cluster-api-addon-provider
+  namespace: capi-addon-system
+spec:
+  url: https://stackhpc.github.io/cluster-api-addon-provider
+  interval: 1h

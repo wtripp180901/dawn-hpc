@@ -1,0 +1,32 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cluster
+  namespace: capi-self
+spec:
+  dependsOn:
+    - name: sealed-secrets
+      namespace: sealed-secrets-system
+    - name: cluster-api-operator
+      namespace: capi-operator-system
+    - name: cluster-api-addon-provider
+      namespace: capi-addon-system
+    - name: cluster-api-janitor-openstack
+      namespace: capi-janitor-system
+  chartRef:
+    kind: HelmChart
+    name: openstack-cluster
+  releaseName: cluster
+  valuesFrom: []
+  install:
+    createNamespace: true
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  driftDetection:
+    mode: enabled
+  # Allow 30 minutes for the autoscaler pod to start
+  interval: 30m
