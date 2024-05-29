@@ -9,12 +9,20 @@ import functools
 import logging
 import os
 import pathlib
+import re
 import shlex
 import subprocess
 import tempfile
 import typing
 
 import click
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    NoEncryption,
+    PrivateFormat,
+    PublicFormat
+)
 import yaml
 
 import easykube
@@ -56,7 +64,7 @@ def exec(*cmd, **kwargs):
     except subprocess.CalledProcessError as exc:
         raise RuntimeError(exc.stderr)
     else:
-        return proc.stdout.decode()
+        return proc.stdout.decode().strip()
     
 
 async def ekwait(ekresource, name, namespace, predicate):
@@ -460,7 +468,28 @@ def fetch_git_info():
     """
     Returns the URL of the remote origin and current branch for the current repo.
     """
-    raise
+    origin = exec("git", "remote", "get-url", "origin")
+    # Check if the origin is an SSH URL
+    # If it is, we need to correct the format for Flux
+    if re.search("^https?://", origin) is None:
+        origin = "ssh://{}".format("/".join(origin.rsplit(":", maxsplit = 1)))
+    branch = exec("git", "branch", "--show-current")
+    return origin, branch
+
+
+@contextlib.contextmanager
+def generate_ssh_keypair():
+    """
+    Generates an SSH keypair and yields the public key and the path to the private key.
+    """
+    private_key = Ed25519PrivateKey.generate()
+    public_key = private_key.public_key()
+    public_bytes = public_key.public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
+    private_bytes = private_key.private_bytes(Encoding.PEM, PrivateFormat.OpenSSH, NoEncryption())
+    with tempfile.NamedTemporaryFile() as private_key_file:
+        private_key_file.write(private_bytes)
+        private_key_file.flush()
+        yield public_bytes.decode(), private_key_file.name
 
 
 async def delete_cluster(ek_client, namespace):
@@ -558,23 +587,42 @@ async def bootstrap(cluster):
             "--sealed-secret-file", credentials_path
         )
         # Commit and push the changes to the remote
-        exec("git", "add", credentials_path)
-        exec("git", "commit", "-m", "Add encrypted credential")
+        exec("git", "add", path)
+        exec("git", "commit", "-m", f"Bootstrap cluster - {cluster}")
         exec("git", "push")
         # Get the git origin and branch for the source
         origin, branch = fetch_git_info()
         # Configure the git source
-        exec("flux", "create", "source", "git", cluster, "--url", origin, "--branch", branch)
+        flux_command = [
+            "flux",
+            "create",
+            "source",
+            "git",
+            cluster,
+            "--kubeconfig", kubeconfig_capi,
+            "--url", origin,
+            "--branch", branch,
+            "--silent",
+        ]
+        if origin.startswith("ssh://"):
+            with generate_ssh_keypair() as (public_key, private_key_file):
+                click.echo(click.style("Add the following SSH public key as a deploy key for the repository:", bold = True, fg = "green"))
+                click.echo(click.style(public_key, bold = True, fg = "green"))
+                click.pause("Press any key to continue")
+                exec(*flux_command, "--private-key-file", private_key_file)
+        else:
+            exec(*flux_command)
         # Configure the kustomization to manage the cluster resources
         exec(
             "flux",
             "create",
             "kustomization",
             cluster,
+            "--kubeconfig", kubeconfig_capi,
             "--source", f"GitRepository/{cluster}",
             "--path", f"./clusters/{cluster}",
             "--prune",
-            "--interval", "10m",
+            "--interval", "5m",
             "--timeout", "5m"
         )
 
@@ -597,12 +645,11 @@ async def teardown(cluster):
         await bootstrap_flux(helm_kind)
         # Bootstrap Cluster API on the kind cluster
         await kustomize_install(ek_kind, REPO_ROOT / "components" / "cluster-api")
-        # Wait for the Helm releases on the kind cluster to become ready
         await wait_for_helm_releases(ek_kind)
-        # Wait for the CAPI providers to become ready on the kind cluster
         await wait_for_capi_providers(ek_kind)
         # Move the cluster resources from the CAPI cluster to the kind cluster
         await move_capi_resources(ek_capi, ek_kind, "capi-self")
+        await wait_for_cluster(ek_kind, "capi-self")
         # Delete the cluster
         await delete_cluster(ek_kind, "capi-self")
 
