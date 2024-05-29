@@ -23,6 +23,8 @@ spec:
     createNamespace: true
     remediation:
       retries: -1
+    # Allow 30 minutes for the initial provisioning
+    timeout: 30m
   upgrade:
     remediation:
       retries: -1
@@ -30,5 +32,3 @@ spec:
     mode: enabled
   # Reconcile every 5 minutes
   interval: 5m
-  # Allow up to 30m for Helm actions
-  timeout: 30m
