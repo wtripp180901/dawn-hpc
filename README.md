@@ -21,7 +21,7 @@ cluster itself.
 
 ## Bootstrapping a cluster
 
-The use of self-managed clsuters creates a bootstrapping problem, i.e. how does the cluster get
+The use of self-managed clusters creates a bootstrapping problem, i.e. how does the cluster get
 created if it manages itself? The solution to this is to use a one-off bootstrapping process that
 performs the following steps:
 
