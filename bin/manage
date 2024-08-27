@@ -65,7 +65,7 @@ def exec(*cmd, **kwargs):
         raise RuntimeError(exc.stderr)
     else:
         return proc.stdout.decode().strip()
-    
+
 
 async def ekwait(ekresource, name, namespace, predicate):
     """
@@ -140,11 +140,11 @@ class ObjectGraph:
             ref["uid"]
             for ref in obj.metadata.get("ownerReferences", [])
         )
-    
+
     def __iter__(self):
         """
         Iterate over the graph.
-        
+
         Objects are only yielded once all their owners have been yielded.
         """
         seen, pending = set(), set(self.nodes.keys())
@@ -268,6 +268,7 @@ def kind_cluster():
     Context manager that manages a kind cluster and yields configured Helm and easykube clients.
     """
     kind_cluster_name = os.environ.get("KIND_CLUSTER_NAME", "kind")
+    kind_cluster_version = os.environ.get("KIND_CLUSTER_VERSION", "v1.30.0")
 
     with tempfile.NamedTemporaryFile() as kubeconfig:
         kubeconfig.close()
@@ -276,13 +277,21 @@ def kind_cluster():
         if any(line.strip() == kind_cluster_name for line in stdout.splitlines()):
             exec("kind", "export", "kubeconfig", "--kubeconfig", kubeconfig.name)
         else:
-            exec("kind", "create", "cluster", "--kubeconfig", kubeconfig.name)
+            exec(
+                "kind",
+                "create",
+                "cluster",
+                "--kubeconfig",
+                kubeconfig.name,
+                "--image",
+                f"kindest/node:{kind_cluster_version}"
+            )
 
         helm_client = pyhelm3.Client(kubeconfig = kubeconfig.name)
         ek_client = easykube.Configuration.from_kubeconfig(kubeconfig.name).async_client()
 
         yield helm_client, ek_client
-        
+
         # If the task executes without error, tear down the kind cluster
         # If not, we leave it behind for debugging
         exec("kind", "delete", "cluster")
