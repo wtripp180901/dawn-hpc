@@ -5,5 +5,5 @@ kubeconfig
 **/.DS_Store
 
 # Don't track unsealed credentials files
-clusters/*/credentials.y[a]ml
+clusters/*/credentials.yaml
 !clusters/example/credentials.yaml
