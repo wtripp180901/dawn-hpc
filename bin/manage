@@ -593,6 +593,7 @@ async def bootstrap(cluster):
         await wait_for_helm_releases(ek_capi)
         # Seal the cluster credentials using kubeseal
         credentials_path = path / "credentials.yaml"
+        sealed_credentials_path = path / "credentials-sealed.yaml"
         exec(
             "kubeseal",
             "--kubeconfig", kubeconfig_capi,
@@ -600,7 +601,7 @@ async def bootstrap(cluster):
             "--controller-name", "sealed-secrets",
             "--controller-namespace", "sealed-secrets-system",
             "--secret-file", credentials_path,
-            "--sealed-secret-file", credentials_path
+            "--sealed-secret-file", sealed_credentials_path,
         )
         # Commit and push the changes to the remote
         exec("git", "add", path)
