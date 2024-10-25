@@ -175,7 +175,7 @@ When the new **credentials.yaml** has been merged into the FluxCD tracked reposi
 | The time interval in which FluxCD will check for these *drifts between configurations* is set in the cluster’s **helmrelease.yaml** found within the `fluxcd-config/components/<cluster-name>/` directory, under the `interval` variable. |
 | :---- |
 
-This should result in the **sealed secret** on the kubernetes cluster to contain the new secret.
+This should result in the **sealed secret** on the Kubernetes cluster containing the new secret. The `sealed-secrets` controller on the cluster will then convert this to a standard k8s secret which can be [decoded](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#decoding-secret) using `kubectl` or `k9s` to check that the contents has been updated correctly.
 
 <a id="deleting-old-secrets-link"></a>
 ###	**Deleting Old Secrets**
