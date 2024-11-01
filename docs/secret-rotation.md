@@ -1,4 +1,4 @@
-# Secret Rotations &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **FluxCD**
+# Secret Rotation
 
 This brief guide should outline all the steps needed to be able to swap out a set of secrets or credentials with FluxCD GitOps.
 
@@ -12,7 +12,7 @@ This brief guide should outline all the steps needed to be able to swap out a se
 #### [Security Threat](#security-threat-link)
 &nbsp; &nbsp; &nbsp; &nbsp; - What to do in the case of a compromised secret.
 
-## [**Horizon Application Credentials**](#horizon-application-credentials-link)
+## [Horizon Application Credentials](#horizon-application-credentials-link)
 #### [Create/Delete Credentials](#createdelete-credentials-link)
 &nbsp; &nbsp; &nbsp; &nbsp; - How to create & delete application credentials within Horizon.
 
@@ -26,29 +26,21 @@ This brief guide should outline all the steps needed to be able to swap out a se
 #### [Rotating Compromised Secrets](#rotating-compromised-secrets-link)
 &nbsp; &nbsp; &nbsp; &nbsp; - Summary for the rotation of secrets posing a security threat.
 
-## [**Validate Configuration**](#validate-configuration-link)
+## [Validate Configuration](#validate-configuration-link)
 #### [Sonobuoy](#sonobuoy-link)
 &nbsp; &nbsp; &nbsp; &nbsp; - Brief outline on validating the Kubernetes configuration.
 
 #
 <a id="pre-requisites-link"></a>
-# **Pre-Requisites**
+# Pre-Requisites
 
 This document assumes that a self-managed CAPI cluster deployed with FluxCD is already configured and deployed, if not, one can be deployed by following the instructions found in [this](https://github.com/stackhpc/capi-helm-fluxcd-config) GitHub repository.
 
 In addition to this, the user trying to rotate the secrets should have an account on Horizon with the necessary permissions.
 
 <a id="useful-resources-link"></a>
-### **Useful Resources**
 
-[CAPI cluster FluxCD repository](https://github.com/stackhpc/capi-helm-fluxcd-config)
-
-[Waldur FluxCD Demo repository](https://github.com/stackhpc/waldur-fluxcd-gitops-demo)
-
-[CAPI Cluster debugging manual](https://github.com/azimuth-cloud/capi-helm-charts/blob/main/charts/openstack-cluster/DEBUGGING.md)
-
-<a id="applications--software-link"></a>
-### **Applications & Software**
+### Applications & Software
 
 | This document assumes that the Kubernetes cluster’s ```kubeconfig``` is known. |
 | :---- |
@@ -75,7 +67,7 @@ The two main categories fall under **cluster maintenance** and **security threat
 
 It is often a good idea and good security practice to rotate passwords and secrets, as it reduces the chances of them existing long enough for them to be exploited or end up in the wrong hands; often many secrets will have an expiration date precisely for this reason.
 
-Therefore, in the case of the user simply updating secrets for the purpose of cluster maintenance it is simply enough to replace the current Kubeseal encrypted secret with an updated, manually encrypted, Kubeseal secret via a GitHub pull request and merge. Then delete the old application credential from Horizon.
+Therefore, in the case of the user simply updating secrets for the purpose of cluster maintenance it is simply enough to replace the current Kubeseal encrypted secret with an updated, manually encrypted, `kubeseal` secret via a GitHub pull request and merge. Then delete the old application credential from Horizon.
 
 <a id="security-threat-link"></a>
 ###	**Security Threat**
@@ -150,7 +142,7 @@ stringData:
         auth_type: ...
 ```
 
-From here make sure that the terminal’s current working directory is in the same one as **credentials.yaml**, `fluxcd-config/clusters/<cluster-name>/`, and then run the following Kubeseal command:
+From here make sure that the terminal’s current working directory is in the same one as **credentials.yaml**, `clusters/<cluster-name>/` from the repo root, and then run the following Kubeseal command:
 
 | kubeseal \--kubeconfig kubeconfig \--format yaml \--controller-name sealed-secrets \--controller-namespace sealed-secrets-system \--secret-file credentials.yaml  \--sealed-secret-file encrypted-creds.yaml |
 | :---- |
@@ -219,8 +211,13 @@ stringData:
 
 Then, much like the previous secret rotation, use Kubeseal to encrypt the new secret. This time round, the Kubeseal command below will seal the secret and overwrite **credentials.yaml** rather than create an intermediate **encrypted-creds.yaml** file.
 
-| kubeseal \--kubeconfig kubeconfig \--format yaml \--controller-name sealed-secrets \--controller-namespace sealed-secrets-system \--secret-file credentials.yaml  \--sealed-secret-file credentials.yaml |
-| :---- |
+kubeseal \
+  --kubeconfig kubeconfig \
+  --format yaml \
+  --controller-name sealed-secrets \
+  --controller-namespace sealed-secrets-system \
+  --secret-file credentials.yaml  \
+  --sealed-secret-file credentials.yaml
 
 Again, this file will then be added, committed and pushed to a preferably new, GitHub branch which can then be reviewed and merged into the branch which FluxCD is tracking for changes. After which, once per interval, FluxCD will compare the current configuration with the branch on GitHub, and upon noticing any differences will attempt to update the current cluster’s configuration to reflect the changes.
 
