@@ -2,33 +2,35 @@
 
 This brief guide should outline all the steps needed to be able to swap out a set of secrets or credentials with FluxCD GitOps.
 
-## [**Pre-requisites**](#pre-requisites-link)
-#### [Useful Resources](#useful-resources-link)
-#### [Applications & Software](#applications--software-link)
+## Contents
 
-## [**Outline**](#outline-link)
-#### [Cluster Maintenance](#cluster-maintenance-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - Basics of what is done in a standard secret rotation.
-#### [Security Threat](#security-threat-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - What to do in the case of a compromised secret.
+### [**Pre-requisites**](#pre-requisites-link)
+- [Useful Resources](#useful-resources-link)
+- [Applications & Software](#applications--software-link)
 
-## [Horizon Application Credentials](#horizon-application-credentials-link)
-#### [Create/Delete Credentials](#createdelete-credentials-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - How to create & delete application credentials within Horizon.
+### [**Outline**](#outline-link)
+- [Cluster Maintenance](#cluster-maintenance-link)
+  - Basics of what is done in a standard secret rotation.
+- [Security Threat](#security-threat-link)
+  - What to do in the case of a compromised secret.
 
-## [**Processing Secrets**](#processing-secrets-link)
-#### [Encrypting Credentials](#encrypting-new-credential-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - Using Kubeseal to encrypt the newly created credentials.
-#### [Updating Secrets](#updating-secrets-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - How to rotate new secrets using FluxCD’s GitOps.
-#### [Deleting Old Secrets](#deleting-old-secrets-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - Some housekeeping steps post secret rotation.
-#### [Rotating Compromised Secrets](#rotating-compromised-secrets-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - Summary for the rotation of secrets posing a security threat.
+### [Horizon Application Credentials](#horizon-application-credentials-link)
+- [Create/Delete Credentials](#createdelete-credentials-link)
+  - How to create & delete application credentials within Horizon.
 
-## [Validate Configuration](#validate-configuration-link)
-#### [Sonobuoy](#sonobuoy-link)
-&nbsp; &nbsp; &nbsp; &nbsp; - Brief outline on validating the Kubernetes configuration.
+### [**Processing Secrets**](#processing-secrets-link)
+- [Encrypting Credentials](#encrypting-new-credential-link)
+  - Using Kubeseal to encrypt the newly created credentials.
+- [Updating Secrets](#updating-secrets-link)
+  - How to rotate new secrets using FluxCD’s GitOps.
+- [Deleting Old Secrets](#deleting-old-secrets-link)
+  - Some housekeeping steps post secret rotation.
+- [Rotating Compromised Secrets](#rotating-compromised-secrets-link)
+  - Summary for the rotation of secrets posing a security threat.
+
+### [Validate Configuration](#validate-configuration-link)
+- [Sonobuoy](#sonobuoy-link)
+  - Brief outline on validating the Kubernetes configuration.
 
 #
 <a id="pre-requisites-link"></a>
