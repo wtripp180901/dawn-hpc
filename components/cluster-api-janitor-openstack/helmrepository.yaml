@@ -5,5 +5,5 @@ metadata:
   name: cluster-api-janitor-openstack
   namespace: capi-janitor-system
 spec:
-  url: https://stackhpc.github.io/cluster-api-janitor-openstack
+  url: https://azimuth-cloud.github.io/cluster-api-janitor-openstack
   interval: 1h
