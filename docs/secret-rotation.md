@@ -28,13 +28,15 @@ This brief guide should outline all the steps needed to be able to swap out a se
   - Summary for the rotation of secrets posing a security threat.
 
 ### [Validate Configuration](#validate-configuration-1)
+- [Pod Status](#pod-status)
+  - How to check the state of pods post secret rotation.
 - [Sonobuoy](#sonobuoy)
   - Brief outline on validating the Kubernetes configuration.
 
 #
 # Pre-Requisites
 
-This document assumes that a self-managed CAPI cluster deployed with FluxCD is already configured and deployed, if not, one can be deployed by following the instructions found in [this](https://github.com/stackhpc/capi-helm-fluxcd-config) GitHub repository.
+This document assumes that a self-managed Cluster API (CAPI) cluster deployed with FluxCD is already configured and deployed, if not, one can be deployed by following the instructions found in [this](https://github.com/stackhpc/capi-helm-fluxcd-config) GitHub repository.
 
 In addition to this, the user trying to rotate the secrets should have an account on Horizon with the necessary permissions.
 
@@ -218,7 +220,26 @@ Again, this file will then be added, committed and pushed to a preferably new, G
 
 # **Validate Configuration**
 
-It is always a good idea to test your deployments for any potential risks or errors, which can lead to more issues further down the line. Therefore, it is worthwhile to validate the Kubernetes cluster with a diagnostic tool.
+It is always a good idea to test your deployments for any potential risks or errors, which can lead to more issues further down the line. Therefore, it is worthwhile to validate the Kubernetes cluster both with a diagnostic tool and by checking the pods' ```status```.
+
+###	**Pod Status**
+
+A quick and simple way of checking the results of the secret rotation is to check the ```status``` and, if necessary, logs of the pods. This can be done by running
+
+```sh
+kubectl get pods -A
+```
+
+then checking for any pods which may have ```Error``` or ```CrashLoopBackOff```. If this is the case check the logs of that pod by running
+
+```sh
+kubectl logs <pod-name> -n <namespace>
+```
+
+> [!TIP]
+> This is where using k9s can be very useful, as it allows for a more interactive and easier way to check the status of pods and follow their logs.
+
+For general help with debugging Cluster API clusters please visit our debugging guide [here](https://github.com/azimuth-cloud/capi-helm-charts/blob/main/charts/openstack-cluster/DEBUGGING.md).
 
 ###	**Sonobuoy**
 
@@ -226,18 +247,21 @@ The official documentation can be found [here](https://sonobuoy.io/docs/v0.57.1/
 
 Once Sonobuoy has been installed, and making sure that the terminal’s working directory is set to the `fluxcd-config` directory, as well as, the appropriate cluster’s **kubeconfig** being exported; a **single** default conformance test can be run with:
 
-| sonobuoy run \--wait \--mode quick |
-| :---- |
+```
+sonobuoy run --wait --mode quick
+```
 
 Once complete, export the results with:
 
-| results=$(sonobuoy retrieve) |
-| :---- |
+```
+results=$(sonobuoy retrieve)
+```
 
 Then inspect them with:
 
-| sonobuoy results $results |
-| :---- |
+```
+sonobuoy results $results
+```
 
 This will display various information, however, all that is of interest at this point are the details under **Run Details** which should, hopefully, report 100% **Node** and **Pod** health.
 
