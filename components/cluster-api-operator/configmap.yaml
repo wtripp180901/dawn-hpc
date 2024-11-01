@@ -6,10 +6,10 @@ metadata:
   namespace: capi-operator-system
 data:
   values.yaml: |
-    core: capi-system:cluster-api:v1.7.2
-    bootstrap: capi-kubeadm-bootstrap-system:kubeadm:v1.7.2
-    controlPlane: capi-kubeadm-control-plane-system:kubeadm:v1.7.2
-    infrastructure: capo-system:openstack:v0.9.0
+    core: capi-system:cluster-api:v1.8.4
+    bootstrap: capi-kubeadm-bootstrap-system:kubeadm:v1.8.4
+    controlPlane: capi-kubeadm-control-plane-system:kubeadm:v1.8.4
+    infrastructure: capo-system:openstack:v0.10.5
     manager:
       featureGates:
         core:

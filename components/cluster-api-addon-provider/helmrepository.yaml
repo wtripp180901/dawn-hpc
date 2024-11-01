@@ -5,5 +5,5 @@ metadata:
   name: cluster-api-addon-provider
   namespace: capi-addon-system
 spec:
-  url: https://stackhpc.github.io/cluster-api-addon-provider
+  url: https://azimuth-cloud.github.io/cluster-api-addon-provider
   interval: 1h

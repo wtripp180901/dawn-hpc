@@ -6,7 +6,7 @@ metadata:
   namespace: capi-janitor-system
 spec:
   chart: cluster-api-janitor-openstack
-  version: 0.5.6
+  version: 0.6.2
   sourceRef:
     kind: HelmRepository
     name: cluster-api-janitor-openstack
