@@ -220,17 +220,17 @@ Again, this file will then be added, committed and pushed to a preferably new, G
 
 # **Validate Configuration**
 
-It is always a good idea to test your deployments for any potential risks or errors, which can lead to more issues further down the line. Therefore, it is worthwhile to validate the Kubernetes cluster both with a diagnostic tool and by checking the pods' ```status```.
+It is always a good idea to test your deployments for any potential risks or errors, which can lead to more issues further down the line. Therefore, it is worthwhile to validate the Kubernetes cluster both with a diagnostic tool and by checking the pods' ```STATUS```.
 
 ###	**Pod Status**
 
-A quick and simple way of checking the results of the secret rotation is to check the ```status``` and, if necessary, logs of the pods. This can be done by running
+A quick and simple way of checking the results of the secret rotation is to check the ```STATUS``` and, if necessary, logs of the pods. This can be done by running
 
 ```sh
 kubectl get pods -A
 ```
 
-then checking for any pods which may have ```Error``` or ```CrashLoopBackOff```. If this is the case check the logs of that pod by running
+then checking for any pods which may be labelled with ```Error``` or ```CrashLoopBackOff```. If this is the case check the logs of that pod by running
 
 ```sh
 kubectl logs <pod-name> -n <namespace>
