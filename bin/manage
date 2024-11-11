@@ -508,11 +508,11 @@ def fetch_git_info():
     # If it is, we need to correct the format for Flux
     if re.search("^https?://", origin) is None:
         origin = "ssh://{}".format("/".join(origin.rsplit(":", maxsplit = 1)))
-        # Get the current branch based on Git version
+    # Get the current branch based on Git version
     try:
         branch = exec("git", "branch", "--show-current")
     except RuntimeError:
-        # Fallback to older Git versionS
+        # Fallback for older git versions
         branch = exec("git", "rev-parse", "--abbrev-ref", "HEAD")
     return origin, branch
 
