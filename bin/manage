@@ -616,9 +616,15 @@ async def bootstrap(cluster):
         # At this point, the cluster is self-managed
         # Bootstrap the sealed secrets on the CAPI cluster
         await bootstrap_sealed_secrets(ek_capi, path, kubeconfig_capi)
+        # Ask user if they want to use custom commit message
+        use_custom_message = click.prompt("Do you want to provide a custom message?", default=False)
+        if use_custom_message:
+            commit_message = click.prompt("Enter your custom commit message")
+        else:
+            commit_message = f"Bootstrap cluster - {cluster}"
         # Commit and push the changes to the remote
         exec("git", "add", path)
-        exec("git", "commit", "-m", f"Bootstrap cluster - {cluster}")
+        exec("git", "commit", "-m", commit_message)
         exec("git", "push")
         # Get the git origin and branch for the source
         origin, branch = fetch_git_info()
