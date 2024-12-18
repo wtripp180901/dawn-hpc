@@ -617,7 +617,7 @@ async def bootstrap(cluster):
         # Bootstrap the sealed secrets on the CAPI cluster
         await bootstrap_sealed_secrets(ek_capi, path, kubeconfig_capi)
         # Ask user if they want to use custom commit message
-        use_custom_message = click.prompt("Do you want to provide a custom message? [y/N]", default=False)
+        use_custom_message = click.prompt("Do you want to provide a custom message? [y/N]", default=False, show_default=False)
         if use_custom_message:
             commit_message = click.prompt("Enter your custom commit message")
         else:
