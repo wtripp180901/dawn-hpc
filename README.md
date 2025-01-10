@@ -95,6 +95,7 @@ The following tools are required to execute the bootstrap script:
   * [Docker](https://docs.docker.com/)
   * [kind](https://kind.sigs.k8s.io/)
   * [kustomize](https://kustomize.io/)
+  * [Helm](https://helm.sh/)
   * [kubeseal](https://github.com/bitnami-labs/sealed-secrets?tab=readme-ov-file#kubeseal)
   * [flux CLI](https://fluxcd.io/flux/cmd/)
 
