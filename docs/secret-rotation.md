@@ -21,7 +21,7 @@ This brief guide outlines all the steps required to rotate the OpenStack applica
 - [Encrypting Credentials](#encrypting-new-credential)
   - Using Kubeseal to encrypt the newly created credentials.
 - [Updating Secrets](#updating-secrets)
-  - How to rotate new secrets using FluxCD’s GitOps.
+  - How to rotate new secrets using FluxCD's GitOps.
 - [Deleting Old Secrets](#deleting-old-secrets)
   - Some housekeeping steps post secret rotation.
 - [Rotating Compromised Secrets](#rotating-compromised-secrets)
@@ -49,7 +49,7 @@ The following are required to rotate the cloud credential on an existing cluster
 
 # Outline
 
-The overall idea is to take advantage of Kubeseal’s encryption, allowing us to upload secrets to our repositories; meaning that after a branch containing the new secrets is merged into the branch being tracked by FluxCD, the FluxCD GitOps controllers on the cluster will update the current cluster deployment to reflect the newly merged branch.
+The overall idea is to take advantage of Kubeseal's encryption, allowing us to upload secrets to our repositories; meaning that after a branch containing the new secrets is merged into the branch being tracked by FluxCD, the FluxCD GitOps controllers on the cluster will update the current cluster deployment to reflect the newly merged branch.
 
 Although the basic outline will remain the same, there are some variations in the preliminary actions depending on the situation and reason why secrets are being rotated.
 
@@ -63,7 +63,7 @@ Therefore, in the case of the user simply updating secrets for the purpose of cl
 
 ###	Security Threat
 
-In the event that the existence of a secret is a cause for concern, such as the current credentials being leaked, then the protocol is largely the same apart from needing to delete the current application credential first before any other step. At which point the compromised secret is no longer valid and anyone using it won’t be able to do anything with it.
+In the event that the existence of a secret is a cause for concern, such as the current credentials being leaked, then the protocol is largely the same apart from needing to delete the current application credential first before any other step. At which point the compromised secret is no longer valid and anyone using it won't be able to do anything with it.
 
 # Horizon Application Credentials
 
@@ -86,9 +86,7 @@ At this point, the newly created secret requires encrypting before it can be rot
 
 ### Encrypting New Credential
 
-Once the new secret's `clouds.yaml` has been downloaded, and before going any further, it would be a good idea to rename the old _credentials.yaml_ in `fluxcd-config/clusters/<cluster-name>/` into something like _old-credentials.yaml_ - of course, only if the secret hasn’t already been deleted in Horizon or is suspected to be compromised.
-
-Now create a new file called `credentials.yaml` in its place with the following structure:
+Once the new secret's `clouds.yaml` has been downloaded, create a new file at ``clusters/<cluster-name>/credentials.yaml` (or replace it if it already exists) with the following structure:
 
 ```
 apiVersion: v1
@@ -106,11 +104,11 @@ metadata:
     addons.stackhpc.com/watch: "true"
 stringData:
   clouds.yaml: |
-    <INSERT THE CONTENTS OF YOUR NEW SECRET’S CLOUDS.YAML, PAYING ATTENTION TO THE
+    <INSERT THE CONTENTS OF YOUR NEW SECRET'S CLOUDS.YAML, PAYING ATTENTION TO THE
     INDENTATIONS>
 ```
 
-Once the newly created **clouds.yaml**’s contents have been copied into **credentials.yaml**, it should look something like this:
+Once the newly created **clouds.yaml**'s contents have been copied into **credentials.yaml**, it should look something like this:
 
 ```
 apiVersion: v1
@@ -139,7 +137,7 @@ stringData:
         auth_type: ...
 ```
 
-Next, make sure that the terminal's current working directory is in the same one the new `credentials.yaml`, this should be `clusters/<cluster-name>/` from the repo root, and then run the following Kubeseal command to encrypt the secret:
+Next, make sure that the terminal's current working directory contains the new `credentials.yaml`, this should be `clusters/<cluster-name>/` from the repo root, then run the following Kubeseal command to encrypt the secret:
 
 ```sh
 kubeseal \
@@ -148,42 +146,36 @@ kubeseal \
   --controller-name sealed-secrets \
   --controller-namespace sealed-secrets-system \
   --secret-file credentials.yaml  \
-  --sealed-secret-file encrypted-creds.yaml
+  --sealed-secret-file credentials-sealed.yaml
 ```
 
 > [!NOTE]
-> This will create a new file named 'encrypted-creds.yaml' containing the encrypted contents and will need to be renamed to 'credentials.yaml'. This is just to be safe, however this step can be avoided by replacing 'encrypted-creds.yaml' with 'credentials.yaml' in the above command.
+> This will create a new file named `credentials-sealed.yaml` containing the encrypted contents. The unencrypted `credentials.yaml` file is [gitignored](https://github.com/stackhpc/capi-helm-fluxcd-config/blob/main/.gitignore#L7-L8) to avoid accidentally pushing the unencrypted secret to the remote git repo.
 
 ### Updating Secrets
 
 With the new secret encrypted, it is time to change the sealed secret which is on the Kubernetes cluster.
 
-The process of changing the secret over is as simple as adding, committing and pushing the new **credentials.yaml** to the upstream GitHub repository which is being tracked by FluxCD.
+The process of changing the secret over is as simple as committing and pushing the new **credentials-sealed.yaml** file to the remote git repository which is being tracked by FluxCD.
 
 > [!TIP]
-> It is highly recommended to `git switch -c` to a new branch when pushing the new credentials.yaml so that a pull request can be reviewed before merging to the tracked branch.
+> It is highly recommended to `git switch -c` to a new branch when pushing the new sealed credentials so that a pull request can be reviewed before merging to the tracked branch.
 
-When the new **credentials.yaml** has been merged into the FluxCD tracked repository branch, FluxCD will try to update the **sealed secret** on the cluster once it recognises that there are differences between the cluster’s current configuration and the one on GitHub.
+When the updated **credentials-sealed.yaml** file has been merged into the FluxCD tracked repository branch, FluxCD will try to update the **sealed secret** on the cluster once it recognises that there are differences between the cluster's current configuration and the one in the remote git repository.
 
 > [!NOTE]
 > The time interval between FluxCD reconciliations of current cluster state vs git repo state is set in `components/cluster/helmrelease.yaml` under the `spec.interval` variable.
 
 This should result in the sealed secret on the Kubernetes cluster containing the new secret. The `sealed-secrets` controller on the cluster will then convert this to a standard k8s secret which can be [decoded](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#decoding-secret) using `kubectl` to check that the contents has been updated correctly.
 
-###	Deleting Old Secrets
-
-Once the sealed secret has been updated on Kubernetes it is time to do some housekeeping by deleting the old credentials and unnecessary files created along the way, such as **old-credentials.yaml** and its corresponding application credential on Horizon.
-
-Do note that in the scenario where the secret has been compromised, this should be the first step completed; this is because doing so invalidates the credential posing the security threat and prevents any further use of the compromised credentials. Apart from this, and no longer needing to rename **credentials.yaml** to **old-credentials.yaml**, all other steps are the same.
+Once the sealed secret has been updated on your Kubernetes cluster it is time to do some housekeeping by deleting the old application credential (using Horizon or the OpenStack CLI).
 
 ###	Rotating Compromised Secrets
 
 As mentioned above, an application credential which is a security concern should be deleted before any other step; after which a new application credential, which will replace it, can be created.
 
 > [!IMPORTANT]
-> Don’t forget to download the ```clouds.yaml``` file after creating the new application credential\!
-
-Due to having deleted the old application credential there is no need to rename the **credentials.yaml** file and it can instead be directly replaced with the template, plus the contents of the new application credential’s **clouds.yaml**.
+> Don't forget to download the `clouds.yaml` file after creating the new application credential!
 
 ```
 apiVersion: v1
@@ -212,7 +204,7 @@ stringData:
         auth_type: ...
 ```
 
-Then, much like the previous secret rotation, use Kubeseal to encrypt the new secret. This time round, the Kubeseal command below will seal the secret and overwrite **credentials.yaml** rather than create an intermediate **encrypted-creds.yaml** file.
+Then, like the previous secret rotation, use Kubeseal to encrypt the new secret:
 
 ```sh
 kubeseal \
@@ -221,10 +213,10 @@ kubeseal \
   --controller-name sealed-secrets \
   --controller-namespace sealed-secrets-system \
   --secret-file credentials.yaml  \
-  --sealed-secret-file credentials.yaml
+  --sealed-secret-file credentials-sealed.yaml
 ```
 
-Again, this file should then be added, committed and pushed to a new GitHub branch which can then be reviewed and merged into the branch which FluxCD is tracking for changes. After which, once per interval, FluxCD will compare the current configuration with the branch on GitHub, and upon noticing any differences will attempt to update the current cluster’s configuration to reflect the changes.
+Again, this file should then be committed and pushed to a new remote branch which can then be reviewed and merged into the branch which FluxCD is tracking for changes. After which, once per interval, FluxCD will compare the current configuration with the branch on GitHub, and upon noticing any differences will attempt to update the current cluster's configuration to reflect the changes.
 
 # Validate Configuration
 
