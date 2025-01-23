@@ -591,13 +591,23 @@ async def bootstrap(cluster):
     with kind_cluster() as (helm_kind, ek_kind, kubeconfig_kind):
         # Bootstrap Flux on the kind cluster
         await bootstrap_flux(helm_kind)
+        logger.info("Bootstrapped flux on the kind cluster")
+
         # Bootstrap the sealed secrets on the kind cluster
         await bootstrap_sealed_secrets(ek_kind, path, kubeconfig_kind)
+        logger.info("Bootstrapped sealed secret")
+
         # Install the Flux resources for the CAPI cluster on the kind cluster
         await kustomize_install(ek_kind, path)
+        logger.info("Kustomize install complete, wait for helm releases")
+
         await wait_for_helm_releases(ek_kind)
+        logger.info("Helm releases ready, wait for capi cluster")
+
         # Wait for the CAPI cluster to become ready and extract the kubeconfig
         kubeconfig_content = await wait_for_cluster(ek_kind, "capi-self")
+        logger.info("CAPI cluster is ready")
+
         # Initialise Helm and easykube clients for the CAPI cluster
         kubeconfig_capi = path / "kubeconfig"
         with open(kubeconfig_capi, "wb") as fh:
@@ -606,6 +616,8 @@ async def bootstrap(cluster):
         helm_capi = pyhelm3.Client(kubeconfig = kubeconfig_capi)
         # Bootstrap Flux on the CAPI cluster
         await bootstrap_flux(helm_capi)
+        logger.info("Bootstrap flux on the CAPI cluster")
+
         # Bootstrap Cluster API on the CAPI cluster
         await kustomize_install(ek_capi, REPO_ROOT / "components" / "cluster-api")
         await wait_for_helm_releases(ek_capi)
