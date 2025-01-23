@@ -14,10 +14,10 @@ data:
 
     clusterNetworking:
       externalNetworkId: "4d00778c-303f-49b2-b624-e3004262312d"
-        internalNetwork:
-          networkFilter:
-            id: 5ee983c5-12b2-4bf4-83c6-e7cb394801e0
-            name: bm-test-net
+      internalNetwork:
+        networkFilter:
+          id: 5ee983c5-12b2-4bf4-83c6-e7cb394801e0
+          name: bm-test-net
 
     controlPlane:
       machineFlavor: "vm.v1.small"
