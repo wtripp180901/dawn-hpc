@@ -16,7 +16,7 @@ patches:
     patch: |-
       - op: replace
         path: /spec/releaseName
-        value: example
+        value: dawntest
 
       - op: add
         path: /spec/valuesFrom/-

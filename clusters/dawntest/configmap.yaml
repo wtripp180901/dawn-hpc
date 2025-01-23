@@ -7,36 +7,42 @@ metadata:
 data:
   values.yaml: |
     # Must match the name of the (sealed) secret in credentials.yaml
-    cloudCredentialsSecretName: cluster-example-credentials
+    cloudCredentialsSecretName: cluster-dawntest-credentials
 
-    kubernetesVersion: 1.30.0
-    machineImageId: "<image id>"
+    kubernetesVersion: 1.30.2
+    machineImageId: "d717a419-83fa-4b5a-b893-564176417359"
 
     clusterNetworking:
-      externalNetworkId: "<external net id>"
+      externalNetworkId: "4d00778c-303f-49b2-b624-e3004262312d"
+        internalNetwork:
+          networkFilter:
+            id: 5ee983c5-12b2-4bf4-83c6-e7cb394801e0
+            name: bm-test-net
 
     controlPlane:
-      machineFlavor: "<flavor id>"
+      machineFlavor: "vm.v1.small"
       machineCount: 3
 
     nodeGroups:
-      - name: md-0
-        machineFlavor: "<flavor id>"
-        machineCount: 3
+      - name: vm
+        machineFlavor: "vm.v1.small"
+        machineCount: 1
+      - name: baremetal
+        machineFlavor: "bm.c6420.p8276.m192"
+        machineCount: 1
 
     addons:
-      # Use the cilium CNI
       cni:
         type: cilium
-
-      # Enable the monitoring stack
       monitoring:
         enabled: true
-
-      # Disable NFD and the NVIDIA/Mellanox operators
+      openstack:
+        enabled: true
+        csiManila:
+          enabled: true
       nodeFeatureDiscovery:
-        enabled: false
+        enabled: true
       nvidiaGPUOperator:
         enabled: false
       mellanoxNetworkOperator:
-        enabled: false
+        enabled: true
