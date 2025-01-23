@@ -38,8 +38,8 @@ data:
         enabled: true
       openstack:
         enabled: true
-        csiManila:
-          enabled: true
+        # csiManila:
+        #   enabled: true
       nodeFeatureDiscovery:
         enabled: true
       nvidiaGPUOperator:
