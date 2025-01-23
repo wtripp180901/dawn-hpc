@@ -678,6 +678,66 @@ async def bootstrap(cluster):
 @manage.command()
 @click.argument("cluster")
 @as_sync
+async def bootstrap_retry_push(cluster):
+    """
+    Bootstrap the specified cluster.
+    """
+    path = resolve_cluster(cluster)
+
+    with kind_cluster() as (helm_kind, ek_kind, kubeconfig_kind):
+        # Initialise Helm and easykube clients for the CAPI cluster
+        kubeconfig_capi = path / "kubeconfig"
+
+        # Ask user if they want to use custom commit message
+        use_custom_message = click.prompt("Do you want to provide a custom message? [y/N]", default=False, show_default=False)
+        if use_custom_message:
+            commit_message = click.prompt("Enter your custom commit message")
+        else:
+            commit_message = f"Bootstrap cluster - {cluster}"
+        # Commit and push the changes to the remote
+        exec("git", "add", path)
+        exec("git", "commit", "-m", commit_message)
+        exec("git", "push")
+        # Get the git origin and branch for the source
+        origin, branch = fetch_git_info()
+        # Configure the git source
+        flux_command = [
+            "flux",
+            "create",
+            "source",
+            "git",
+            cluster,
+            "--kubeconfig", kubeconfig_capi,
+            "--url", origin,
+            "--branch", branch,
+            "--silent",
+        ]
+        if origin.startswith("ssh://"):
+            with generate_ssh_keypair() as (public_key, private_key_file):
+                click.echo(click.style("Add the following SSH public key as a deploy key for the repository:", bold = True, fg = "green"))
+                click.echo(click.style(public_key, bold = True, fg = "green"))
+                click.pause("Press any key to continue")
+                exec(*flux_command, "--private-key-file", private_key_file)
+        else:
+            exec(*flux_command)
+        # Configure the kustomization to manage the cluster resources
+        exec(
+            "flux",
+            "create",
+            "kustomization",
+            cluster,
+            "--kubeconfig", kubeconfig_capi,
+            "--source", f"GitRepository/{cluster}",
+            "--path", f"./clusters/{cluster}",
+            "--prune",
+            "--interval", "5m",
+            "--timeout", "5m"
+        )
+
+
+@manage.command()
+@click.argument("cluster")
+@as_sync
 async def teardown(cluster):
     """
     Tear down the specified cluster.
