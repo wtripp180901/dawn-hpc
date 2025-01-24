@@ -26,7 +26,7 @@ data:
     nodeGroups:
       - name: vm
         machineFlavor: "vm.v1.small"
-        machineCount: 1
+        machineCount: 2
       - name: baremetal
         machineFlavor: "bm.c6420.p8276.m192"
         machineCount: 1
