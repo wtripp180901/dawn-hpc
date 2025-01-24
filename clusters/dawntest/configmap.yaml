@@ -46,3 +46,11 @@ data:
         enabled: false
       mellanoxNetworkOperator:
         enabled: true
+      ingress:
+        enabled: true
+        nginx:
+          release:
+            values:
+              controller:
+                extraArgs:
+                  enable-ssl-passthrough: "true"
