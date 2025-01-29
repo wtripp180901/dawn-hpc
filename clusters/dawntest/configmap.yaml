@@ -34,6 +34,14 @@ data:
     addons:
       cni:
         type: cilium
+        cilium:
+          release:
+            values:
+              hubble:
+                relay:
+                  enabled: true
+                ui:
+                  enabled: true
       monitoring:
         enabled: true
       openstack:
