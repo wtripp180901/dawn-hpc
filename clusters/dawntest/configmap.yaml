@@ -9,8 +9,8 @@ data:
     # Must match the name of the (sealed) secret in credentials.yaml
     cloudCredentialsSecretName: cluster-dawntest-credentials
 
-    kubernetesVersion: 1.30.2
-    machineImageId: "d717a419-83fa-4b5a-b893-564176417359"
+    kubernetesVersion: 1.31.4
+    machineImageId: "6ed3da4b-3b65-4d44-959f-f35956db1c78"
 
     clusterNetworking:
       externalNetworkId: "4d00778c-303f-49b2-b624-e3004262312d"
