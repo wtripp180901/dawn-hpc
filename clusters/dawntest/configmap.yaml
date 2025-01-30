@@ -56,6 +56,8 @@ data:
           enabled: true
           defaultStorageClass:
             isClusterDefault: true
+            parameters:
+              type: ceph01_cephfs
       # turn off cinder, as it doesn't work with baremetal
       csiCinder:
         enabled: false
