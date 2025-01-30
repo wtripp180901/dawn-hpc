@@ -52,15 +52,15 @@ data:
           enabled: true
       openstack:
         enabled: true
+        # turn off cinder, as it doesn't work with baremetal
+        csiCinder:
+          enabled: false
         csiManila:
           enabled: true
           defaultStorageClass:
             isClusterDefault: true
             parameters:
               type: ceph01_cephfs
-      # turn off cinder, as it doesn't work with baremetal
-      csiCinder:
-        enabled: false
       nodeFeatureDiscovery:
         enabled: true
       nvidiaGPUOperator:
