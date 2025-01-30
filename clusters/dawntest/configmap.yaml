@@ -32,7 +32,7 @@ data:
         machineCount: 1
       - name: baremetal
         machineFlavor: "bm.xe9640.xp8468.m1024.pvc.gpu"
-        machineCount: 2
+        machineCount: 1
 
     addons:
       cni:
