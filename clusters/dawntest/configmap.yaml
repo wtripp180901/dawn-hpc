@@ -46,7 +46,7 @@ data:
                 ui:
                   enabled: true
       monitoring:
-        enabled: true
+        enabled: false
       csi:
         cephfs:
           enabled: true
