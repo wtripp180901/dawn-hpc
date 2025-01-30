@@ -46,7 +46,7 @@ data:
                 ui:
                   enabled: true
       monitoring:
-        enabled: true
+        enabled: false
       csi:
         cephfs:
           enabled: true
@@ -54,6 +54,11 @@ data:
         enabled: true
         csiManila:
           enabled: true
+          # defaultStorageClass:
+          #   isClusterDefault: true
+      # turn off cinder, as it doesn't work with baremetal
+      # csiCinder:
+      #   enabled: false
       nodeFeatureDiscovery:
         enabled: true
       nvidiaGPUOperator:
