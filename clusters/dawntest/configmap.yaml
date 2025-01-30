@@ -30,7 +30,7 @@ data:
       - name: baremetal
         machineFlavor: "bm.c6420.p8276.m192"
         machineCount: 1
-      - name: baremetal
+      - name: dawn
         machineFlavor: "bm.xe9640.xp8468.m1024.pvc.gpu"
         machineCount: 1
 
