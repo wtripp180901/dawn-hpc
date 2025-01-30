@@ -47,6 +47,9 @@ data:
                   enabled: true
       monitoring:
         enabled: true
+      csi:
+        cephfs:
+          enabled: true
       openstack:
         enabled: true
         csiManila:
