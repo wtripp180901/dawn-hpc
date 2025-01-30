@@ -32,7 +32,7 @@ data:
         machineCount: 1
       - name: dawn
         machineFlavor: "bm.xe9640.xp8468.m1024.pvc.gpu"
-        machineCount: 1
+        machineCount: 2
 
     addons:
       cni:
