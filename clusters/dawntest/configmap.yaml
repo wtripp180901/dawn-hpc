@@ -9,6 +9,9 @@ data:
     # Must match the name of the (sealed) secret in credentials.yaml
     cloudCredentialsSecretName: cluster-dawntest-credentials
 
+    # inject debug ssh key
+    machineSSHKeyName: johng
+
     kubernetesVersion: 1.31.4
     machineImageId: "6ed3da4b-3b65-4d44-959f-f35956db1c78"
 
