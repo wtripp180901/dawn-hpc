@@ -70,6 +70,18 @@ data:
         enabled: false
       mellanoxNetworkOperator:
         enabled: true
+        release:
+          values:
+            # turn off the shared plugin
+            rdmaSharedDevicePlugin:
+              deploy: false
+            # we try to use SRIOV with host devs
+            sriovDevicePlugin:
+              deploy: true
+            ibKubernetes:
+              deploy: true
+            secondaryNetwork:
+              deploy: true
       ingress:
         enabled: true
         nginx:
