@@ -29,10 +29,7 @@ data:
     nodeGroups:
       - name: vm
         machineFlavor: "vm.v1.small"
-        machineCount: 3
-      - name: baremetal
-        machineFlavor: "bm.c6420.p8276.m192"
-        machineCount: 1
+        machineCount: 2
       - name: dawn
         machineFlavor: "bm.xe9640.xp8468.m1024.pvc.gpu"
         machineCount: 2
@@ -72,6 +69,8 @@ data:
         enabled: true
         release:
           values:
+            # TODO work through
+            # https://docs.nvidia.com/networking/display/kubernetes2410/getting+started+with+kubernetes#src-2494425587_GettingStartedwithKubernetes-NetworkOperatorDeploymentwithanSR-IOVInfiniBandNetworkwithPKeyManagement
             # turn off the shared plugin
             rdmaSharedDevicePlugin:
               deploy: false
