@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-willt-config
+  namespace: capi-self
+data:
+  values.yaml: |
+    # Must match the name of the (sealed) secret in credentials.yaml
+    cloudCredentialsSecretName: cluster-willt-credentials
+
+    kubernetesVersion: 1.31.4
+    machineImageId: "38797f3f-512b-42be-92a0-293e60ee4249"
+
+    clusterNetworking:
+      externalNetworkId: "ee54f79e-d33a-4866-8df0-4a4576d70243"
+
+    controlPlane:
+      machineFlavor: "ec1.medium"
+      machineCount: 3
+
+    nodeGroups:
+      - name: md-0
+        machineFlavor: "ec1.medium"
+        machineCount: 3
+
+    addons:
+      # Use the cilium CNI
+      cni:
+        type: cilium
+
+      # Enable the monitoring stack
+      monitoring:
+        enabled: false
+
+      # Disable NFD and the NVIDIA/Mellanox operators
+      nodeFeatureDiscovery:
+        enabled: false
+      nvidiaGPUOperator:
+        enabled: false
+      mellanoxNetworkOperator:
+        enabled: false
