@@ -9,6 +9,8 @@ data:
     # Must match the name of the (sealed) secret in credentials.yaml
     cloudCredentialsSecretName: cluster-willt-credentials
 
+    machineSSHKeyName: willt-stackhpc-com
+
     kubernetesVersion: 1.31.4
     machineImageId: "38797f3f-512b-42be-92a0-293e60ee4249"
 
