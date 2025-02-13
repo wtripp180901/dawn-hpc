@@ -54,6 +54,18 @@ data:
               "apiVersion": "kubelet.config.k8s.io/v1beta1",
               "kind": "KubeletConfiguration",
               "topologyManagerPolicy": "restricted",
+              "memoryManagerPolicy": "Static",
+              "reservedMemory": [
+                  {
+                      "numaNode": 0,
+                      "limits": {
+                        "memory": "1Gi",
+                      }
+                  }
+                ],
+              "evictionHard": {
+                "memory.available": "1Gi",
+              },
             }
         joinConfiguration:
           nodeRegistration:
