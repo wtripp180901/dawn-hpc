@@ -54,6 +54,11 @@ data:
               "apiVersion": "kubelet.config.k8s.io/v1beta1",
               "kind": "KubeletConfiguration",
               "reservedSystemCPUs": "0",
+              "cpuManagerPolicy": "static",
+              "cpuManagerPolicyOptions":
+              {
+                  "full-pcpus-only": "true",
+              },
               "topologyManagerPolicy": "restricted",
               "memoryManagerPolicy": "Static",
               "reservedMemory": [
