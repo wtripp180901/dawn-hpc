@@ -63,6 +63,12 @@ data:
               type: ceph01_cephfs
       nodeFeatureDiscovery:
         enabled: true
+        release:
+          values:
+            master:
+              # help keep GPU nodes only
+              # used by GPU workloads
+              enableTaints: true
       nvidiaGPUOperator:
         enabled: false
       mellanoxNetworkOperator:
