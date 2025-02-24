@@ -33,6 +33,14 @@ data:
       - name: dawn
         machineFlavor: "bm.xe9640.xp8468.m1024.pvc.gpu"
         machineCount: 2
+        kubeadmConfigSpec:
+          joinConfiguration:
+            nodeRegistration:
+              kubeletExtraArgs:
+                cpu-manager-policy: "static"
+                reserved-cpus: "0-3"
+                cpu-manager-policy-options: "full-pcpus-only=true"
+                topology-manger-policy: "restricted"
 
     addons:
       cni:
