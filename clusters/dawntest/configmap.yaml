@@ -40,7 +40,6 @@ data:
                 cpu-manager-policy: "static"
                 reserved-cpus: "0-3"
                 cpu-manager-policy-options: "full-pcpus-only=true"
-                topology-manger-policy: "restricted"
 
     addons:
       cni:
