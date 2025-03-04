@@ -3,6 +3,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: restricted-pss-vaps
+  namespace: default
 spec:
   url: https://stackhpc.github.io/restricted-pss-vaps-helm
   interval: 1h

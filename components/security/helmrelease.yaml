@@ -3,6 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: restricted-pss-vaps
+  namespace: default
 spec:
   chartRef:
     kind: HelmChart
