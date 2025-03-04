@@ -7,6 +7,7 @@ configurations:
   - kustomizeconfig.yaml
 
 configMapGenerator:
-- name: helm-values
+- name: restricted-pss-vaps-values
+  namespace: default
   files:
     - values.yaml=values.yaml
