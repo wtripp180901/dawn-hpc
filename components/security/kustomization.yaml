@@ -1,0 +1,12 @@
+resources:
+  - helmrepository.yaml
+  - helmchart.yaml
+  - helmrelease.yaml
+
+configurations:
+  - kustomizeconfig.yaml
+
+configMapGenerator:
+- name: helm-values
+  files:
+    - values.yaml=values.yaml

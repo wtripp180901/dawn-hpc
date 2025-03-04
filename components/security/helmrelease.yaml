@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: restricted-pss-vaps
+spec:
+  chartRef:
+    kind: HelmChart
+    name: restricted-pss-vaps
+  releaseName: restricted-pss-vaps
+  valuesFrom:
+  - kind: ConfigMap
+    name: helm-values
+    valuesKey: values.yaml
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  driftDetection:
+    mode: enabled
+  interval: 5m

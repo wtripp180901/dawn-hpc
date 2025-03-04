@@ -5,6 +5,7 @@ resources:
   - ../../components/cluster
   - configmap.yaml
   - credentials-sealed.yaml
+  - ../../components/security
   #- ../../components/intel-device-plugin
 
 # Patch the Helm release for the cluster to update the release name

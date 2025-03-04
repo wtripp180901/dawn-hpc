@@ -1,0 +1,26 @@
+defaultBindingNamespaceSelector:
+  matchExpressions:
+  - key: kubernetes.io/metadata.name
+    operator: NotIn
+    values:
+    - capi-addon-system
+    - capi-janitor-system
+    - capi-kubeadm-bootstrap-system
+    - capi-kubeadm-control-plane-system
+    - capi-operator-system
+    - capi-self
+    - capi-system
+    - capo-system
+    - cert-manager
+    - flux-system
+    - kube-node-lease
+    - kube-public
+    - kube-system
+    - node-problem-detector
+    - openstack-system
+    - sealed-secrets-system
+    - intel
+
+allowedCapabilities:
+- NET_BIND_SERVICE
+- IPC_LOCK
